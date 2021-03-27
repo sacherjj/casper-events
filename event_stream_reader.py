@@ -5,7 +5,7 @@ import random
 import logging
 
 
-def node_messsage_streamer(server: str, start_from: int = 0):
+def node_message_streamer(server: str, start_from: int = 0):
     """ yields messages from a node server """
     messages = SSEClient(f"{server}?start_from={start_from}")
     for msg in messages:
@@ -53,7 +53,7 @@ class EventStreamReader:
         self.start_from = start_from
         self.last_msg_id = -1
         if message_streamer is None:
-            self._message_streamer = node_messsage_streamer
+            self._message_streamer = node_message_streamer
         else:
             self._message_streamer = message_streamer
 
