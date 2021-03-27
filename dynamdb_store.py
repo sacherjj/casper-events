@@ -1,6 +1,25 @@
 import boto3
-import os
+import config
 
+
+# For a Boto3 client.
+dbc = boto3.client('dynamodb', endpoint_url='http://localhost:8000')
+response = dbc.list_tables()
+table_names = response["TableNames"]
+
+# dbr = boto3.resource('dynamodb', endpoint_url='http://localhost:8000')
+# table = dbr.Table('events')
+#
+# table.put()
+#
+# __TableName__ = "Events"
+#
+#
+# print(response)
+#
+# # For a Boto3 service resource
+# ddb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000')
+# print(list(ddb.tables.all()))
 
 
 # For a Boto3 client.
@@ -22,6 +41,64 @@ def create_table_finality_signature(ddb):
 
         ])
 
+
+deploy = {"deploy_hash": "74e770e1c61cff900fe03802bf54de60f3af5fbcffdbff2307a9725fcc50c8f5",
+          "account": "014b466f5c6c87bb1d2566d166120e320a724231374cd0775e0e347afed70a4745",
+          "timestamp": "2021-03-26T19:52:52.078Z", "ttl": "1h", "dependencies": [],
+          "block_hash": "d0a6c35724bfe0f5935b96afee9dee07fd77a7456c445cef46c59f5754609a01", "execution_result": {
+        "Success": {"effect": {"operations": [
+            {"key": "hash-7c38c0b317f95e3304c4d894505dca282602cf5fcf2b7fe25e6c87d77262ba40", "kind": "Read"},
+            {"key": "hash-1e302ff032085443f440eed14d9202d947660ff1955b5cc1db3614ecaf366ff7", "kind": "Read"},
+            {"key": "balance-dca87e8bead2ec23f6088bbf32c476e903295c0ce74304831b3e8a48e8453b5a", "kind": "Write"},
+            {"key": "hash-ae901b66a938306696a1736bfffea46e4c9aa2145b0e6a662a71ad5defd6f661", "kind": "Read"},
+            {"key": "balance-2ee348d8ba9365e4c01053f3220457efe346551a23da533c14abaefa8dd4c24f", "kind": "Write"},
+            {"key": "bid-9bdcf9bcdb8d155cde18f9216944a3eecdaadf46438e94059d4f3c41ab0516df", "kind": "Write"},
+            {"key": "transfer-a83b288a5952e833572e7f7111dcff97b6e6517f776b78d41281ef02e8f61225", "kind": "Write"},
+            {"key": "balance-af047e42fbeb6ae5442fd477d6343e4fa61961a9c2301fcac005931221c64fe1", "kind": "Read"},
+            {"key": "deploy-74e770e1c61cff900fe03802bf54de60f3af5fbcffdbff2307a9725fcc50c8f5", "kind": "Write"},
+            {"key": "balance-a8af00247d175af03414349010b02455de006b5ad7a1ff146cbfec76506c27e3", "kind": "Write"}],
+                               "transforms": [
+                                   {"key": "bid-9bdcf9bcdb8d155cde18f9216944a3eecdaadf46438e94059d4f3c41ab0516df",
+                                    "transform": {"WriteBid": {
+                                        "validator_public_key": "014b466f5c6c87bb1d2566d166120e320a724231374cd0775e0e347afed70a4745",
+                                        "bonding_purse": "uref-2ee348d8ba9365e4c01053f3220457efe346551a23da533c14abaefa8dd4c24f-007",
+                                        "staked_amount": "49999001001012175", "delegation_rate": 10,
+                                        "vesting_schedule": {"initial_release_timestamp_millis": 1624392000000,
+                                                             "locked_amounts": null}, "delegators": {},
+                                        "inactive": false}}},
+                                   {"key": "balance-af047e42fbeb6ae5442fd477d6343e4fa61961a9c2301fcac005931221c64fe1",
+                                    "transform": "Identity"},
+                                   {"key": "balance-2ee348d8ba9365e4c01053f3220457efe346551a23da533c14abaefa8dd4c24f",
+                                    "transform": {"AddUInt512": "49999000000000000"}},
+                                   {"key": "transfer-a83b288a5952e833572e7f7111dcff97b6e6517f776b78d41281ef02e8f61225",
+                                    "transform": {"WriteTransfer": {
+                                        "deploy_hash": "74e770e1c61cff900fe03802bf54de60f3af5fbcffdbff2307a9725fcc50c8f5",
+                                        "from": "account-hash-9bdcf9bcdb8d155cde18f9216944a3eecdaadf46438e94059d4f3c41ab0516df",
+                                        "to": null,
+                                        "source": "uref-a8af00247d175af03414349010b02455de006b5ad7a1ff146cbfec76506c27e3-007",
+                                        "target": "uref-2ee348d8ba9365e4c01053f3220457efe346551a23da533c14abaefa8dd4c24f-007",
+                                        "amount": "49999000000000000", "gas": "0", "id": null}}},
+                                   {"key": "balance-a8af00247d175af03414349010b02455de006b5ad7a1ff146cbfec76506c27e3",
+                                    "transform": {"WriteCLValue": {"cl_type": "U512", "bytes": "0500460a99e8",
+                                                                   "parsed": "999000000000"}}},
+                                   {"key": "hash-ae901b66a938306696a1736bfffea46e4c9aa2145b0e6a662a71ad5defd6f661",
+                                    "transform": "Identity"},
+                                   {"key": "deploy-74e770e1c61cff900fe03802bf54de60f3af5fbcffdbff2307a9725fcc50c8f5",
+                                    "transform": {"WriteDeployInfo": {
+                                        "deploy_hash": "74e770e1c61cff900fe03802bf54de60f3af5fbcffdbff2307a9725fcc50c8f5",
+                                        "transfers": [
+                                            "transfer-a83b288a5952e833572e7f7111dcff97b6e6517f776b78d41281ef02e8f61225"],
+                                        "from": "account-hash-9bdcf9bcdb8d155cde18f9216944a3eecdaadf46438e94059d4f3c41ab0516df",
+                                        "source": "uref-a8af00247d175af03414349010b02455de006b5ad7a1ff146cbfec76506c27e3-007",
+                                        "gas": "236093720"}}},
+                                   {"key": "hash-7c38c0b317f95e3304c4d894505dca282602cf5fcf2b7fe25e6c87d77262ba40",
+                                    "transform": "Identity"},
+                                   {"key": "balance-dca87e8bead2ec23f6088bbf32c476e903295c0ce74304831b3e8a48e8453b5a",
+                                    "transform": {"AddUInt512": "1000000000"}},
+                                   {"key": "hash-1e302ff032085443f440eed14d9202d947660ff1955b5cc1db3614ecaf366ff7",
+                                    "transform": "Identity"}]},
+                    "transfers": ["transfer-a83b288a5952e833572e7f7111dcff97b6e6517f776b78d41281ef02e8f61225"],
+                    "cost": "236093720"}}}
 
 full_block = {"block_hash": "599d62a072d84545b276b6498f0e598fa606284e6413759d8690559fc95d8867",
               "block": {
