@@ -14,8 +14,7 @@ for msg in esr.messages():
         continue
     data = json.loads(msg.data)
     message[list(data.keys())[0]] += 1
-    if "BlockAdded" in msg.data:
-        print(msg.data)
+    print(msg.data)
 
 # FinalitySignature - block_hash, era_id, signature, public_key
 # DeployProcessed - deploy_hash, account, timestamp, ttl, dependencies, block_hash, execution_results
