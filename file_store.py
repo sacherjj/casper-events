@@ -29,6 +29,10 @@ def save_file_in_directory(directory: str, filename: str, contents: str, root_di
 
 def move_deploys_to_era(directory: str, era_id: str, root_dir: Path = DATA_DIR):
     """ Moves all temp stored deploys into the proper era directory """
+
+    # TODO: Check that there is not work to do before creating block_hash dir.
+    # This would occur when catching up sync and not getting finality_signatures.
+
     source_dir = root_dir / directory
     target_dir = root_dir / era_directory_name(era_id) / directory
     target_dir.mkdir(parents=True, exist_ok=True)

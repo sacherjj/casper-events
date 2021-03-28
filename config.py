@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 
 SSE_SERVER_URL = "http://18.220.220.20:9999/events"
+# SSE_SERVER_URL = "http://3.15.169.239:9999/events"
+
 SCRIPT_DIR = Path(__file__).parent.absolute()
 DATA_DIR = SCRIPT_DIR / "events"
 

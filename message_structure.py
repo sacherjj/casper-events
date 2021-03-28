@@ -73,7 +73,7 @@ class MessageData:
 
     @property
     def era_id(self):
-        # Does not exist for DeployProcessed so will be NOT_FOUND_VALUE
+        # Does not exist for DeployProcessed so will be None
 
         # Finality Signature location
         era_id = self.data["era_id"]
