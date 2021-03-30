@@ -1,6 +1,7 @@
 import json
 
 
+API_VERSION = "ApiVersion"
 DEPLOY_PROCESSED = "DeployProcessed"
 BLOCK_ADDED = "BlockAdded"
 FINALITY_SIGNATURE = "FinalitySignature"
@@ -30,11 +31,16 @@ class NestedDict(dict):
 class MessageData:
 
     def __init__(self, json_str: str):
+        self.full_msg = json_str
         json_data = json.loads(json_str)
         if len(json_data.keys()) > 1:
             raise ValueError("Expected message data to have only one root dict key")
         self.message_type = next(iter(json_data.keys()))
-        self.data = NestedDict(json_data[self.message_type])
+        # ApiVersion is a scalar so using whole data
+        if self.message_type == API_VERSION:
+            self.data = NestedDict(json_data)
+        else:
+            self.data = NestedDict(json_data[self.message_type])
 
     def _fin_sig_pk(self):
         return f"finsig-{self.block_hash}-{self.data['public_key']}"
@@ -45,8 +51,15 @@ class MessageData:
     def _deploy_pk(self):
         return f"deploy-{self.data['deploy_hash']}"
 
+    def _api_pk(self):
+        return f"api-{self.data[API_VERSION].replace('.', '_')}"
+
     def is_type(self, type_name: str) -> bool:
         return self.message_type == type_name
+
+    @property
+    def is_api_version(self):
+        return self.is_type(API_VERSION)
 
     @property
     def is_deploy_processed(self):

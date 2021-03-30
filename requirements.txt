@@ -1,3 +1,4 @@
 sseclient
 boto3
 requests
+jsonrpcclient
