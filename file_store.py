@@ -58,7 +58,7 @@ def save_files():
         # Block was in.
         save_file_in_directory(directory, data.primary_key, msg.data)
         if data.is_block_added:
-            # WHen a block is added, we know what the block era is for deploys stored, so we can copy them over.
+            # When a block is added, we know what the block era is for deploys stored, so we can copy them over.
             move_deploys_to_era(data.block_hash, era_id)
 
 
@@ -92,4 +92,4 @@ def recreate_finality_signatures(data_dir: Path = config.DATA_DIR):
                     print(e)
 
 
-# recreate_finality_signatures()
+save_files()

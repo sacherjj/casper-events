@@ -68,6 +68,8 @@ class EventStreamReader:
         while reconnect_count < self.RECONNECT_COUNT:
             reconnect_count += 1
             try:
+                # On restart we might crawl through a bunch, but this doesn't miss them if it is a server restart.
+                self.start_from = 0
                 for message in self._message_streamer(self.server, self.start_from):
                     # SSE may send empty messages.  We ignore those.
                     if message.id is not None:

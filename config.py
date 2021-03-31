@@ -3,7 +3,7 @@ from pathlib import Path
 
 SSE_SERVER_URL = "http://18.220.220.20:9999/events"
 # SSE_SERVER_URL = "http://3.15.169.239:9999/events"
-RPC_SERVER_URL = "http://18.220.220.20:7777/rpc"
+RPC_SERVER_URL = "http://18.144.176.168:7777/rpc"
 
 SCRIPT_DIR = Path(__file__).parent.absolute()
 DATA_DIR = SCRIPT_DIR / "events"

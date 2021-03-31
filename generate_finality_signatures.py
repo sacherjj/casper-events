@@ -23,9 +23,14 @@ def generate_finality_signatures_for_block(block_hash):
         public_key = proof["public_key"]
         signature = proof["signature"]
         finality_signatures.append({"FinalitySignature":
-                                       {"block_hash": block_hash,
-                                        "era_id": era_id,
-                                        "signature": signature,
-                                        "public_key": public_key}
-                                   })
+                                        {"block_hash": block_hash,
+                                         "era_id": era_id,
+                                         "signature": signature,
+                                         "public_key": public_key}
+                                    })
     return finality_signatures
+
+
+if __name__ == '__main__':
+    for fs in generate_finality_signatures_for_block('16c3d7acbe10c417687b574ef20f48352fb2b5842c434a66edd5dda894c7f26e'):
+        print(fs)
