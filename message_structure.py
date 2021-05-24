@@ -5,6 +5,7 @@ API_VERSION = "ApiVersion"
 DEPLOY_PROCESSED = "DeployProcessed"
 BLOCK_ADDED = "BlockAdded"
 FINALITY_SIGNATURE = "FinalitySignature"
+STEP = "Step"
 
 
 class NestedDict(dict):
@@ -54,6 +55,9 @@ class MessageData:
     def _api_pk(self):
         return f"api-{self.data[API_VERSION].replace('.', '_')}"
 
+    def _step_pk(self):
+        return f"step-{self.data['era_id']}"
+
     def is_type(self, type_name: str) -> bool:
         return self.message_type == type_name
 
@@ -77,7 +81,8 @@ class MessageData:
     def primary_key(self):
         funcs = {FINALITY_SIGNATURE: self._fin_sig_pk,
                  BLOCK_ADDED: self._block_pk,
-                 DEPLOY_PROCESSED: self._deploy_pk}
+                 DEPLOY_PROCESSED: self._deploy_pk,
+                 STEP: self._step_pk}
         return funcs[self.message_type]()
 
     @property

@@ -18,7 +18,7 @@ esr = EventStreamReader(config.SSE_SERVER_URL)
 #   Final location: era_<era_id>/<block_hash>/finsig-<block_hash>-<public_key>
 
 
-def era_directory_name(era_id: Union[str,int]) -> str:
+def era_directory_name(era_id: Union[str, int]) -> str:
     return f"era_{era_id}"
 
 

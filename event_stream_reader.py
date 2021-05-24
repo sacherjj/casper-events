@@ -34,7 +34,7 @@ def file_message_streamer(server: str, start_from):
 
 def file_message_streamer_with_disconnects(server: str, start_from: int):
     """ Call file_message_streamer with random ConnectionErrors """
-    error_step = random.randint(0, 100)
+    error_step = random.randint(0, 1000)
     cur_step = 0
     for msg in file_message_streamer(server, start_from):
         cur_step += 1
