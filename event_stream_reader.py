@@ -46,7 +46,7 @@ def file_message_streamer_with_disconnects(server: str, start_from: int):
 class EventStreamReader:
     """ Read the event stream of a casper-node """
     RECONNECT_DELAY_SEC = 5
-    RECONNECT_COUNT = 500
+    RECONNECT_COUNT = 1500
 
     def __init__(self, server_address: str, start_from: int = 0, message_streamer=None):
         self.server = server_address

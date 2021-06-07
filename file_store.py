@@ -92,4 +92,8 @@ def recreate_finality_signatures(data_dir: Path = config.DATA_DIR):
                     print(e)
 
 
-save_files()
+while True:
+    try:
+        save_files()
+    except Exception as e:
+        print(f"file_store exception: {e}")
