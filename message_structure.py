@@ -1,4 +1,5 @@
 import json
+import datetime
 
 
 API_VERSION = "ApiVersion"
@@ -6,6 +7,7 @@ DEPLOY_PROCESSED = "DeployProcessed"
 BLOCK_ADDED = "BlockAdded"
 FINALITY_SIGNATURE = "FinalitySignature"
 STEP = "Step"
+FAULT = "Fault"
 
 
 class NestedDict(dict):
@@ -58,6 +60,16 @@ class MessageData:
     def _step_pk(self):
         return f"step-{self.data['era_id']}"
 
+    @staticmethod
+    def _unique_timestamp():
+        return f"{datetime.datetime.now().timestamp()}"
+
+    def _fault_pk(self):
+        return f"fault-{self._unique_timestamp()}"
+
+    def _unknown_pk(self):
+        return f"unknown-{self._unique_timestamp()}"
+
     def is_type(self, type_name: str) -> bool:
         return self.message_type == type_name
 
@@ -82,8 +94,10 @@ class MessageData:
         funcs = {FINALITY_SIGNATURE: self._fin_sig_pk,
                  BLOCK_ADDED: self._block_pk,
                  DEPLOY_PROCESSED: self._deploy_pk,
-                 STEP: self._step_pk}
-        return funcs[self.message_type]()
+                 STEP: self._step_pk,
+                 FAULT: self._fault_pk}
+        func = funcs.get(self.message_type, self._unknown_pk)
+        return func()
 
     @property
     def block_hash(self):
