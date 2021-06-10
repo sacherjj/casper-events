@@ -16,7 +16,7 @@ import json
 #  - current validator list and weights
 #  - finality signatures for a block
 #
-# This example uses the SSE event stream from a node as this is event driven, provides the fastest responce, and
+# This example uses the SSE event stream from a node as this is event driven, provides the fastest response, and
 # eliminates polling of an RPC call.
 #
 # At startup, the validators weights is not known for the current Era, so this is retrieved via RPC calls.  This
@@ -55,7 +55,7 @@ def event_stream_messages():
         print(f"Reconnect count: {RECONNECT_COUNT} exceeded. Exiting...")
 
 
-def get_block_by_height(block_height=None):
+def get_block_by_height(block_height=None) -> dict:
     """
     Get block by block_height from RPC call.  If block_height is missing, will get latest block.
     """
@@ -105,7 +105,7 @@ class EraData:
         block_header = block_data["block"]["header"]
         return block_header["height"], block_header["era_id"], block_header["era_end"]
 
-    def _prune_era_data(self, delete_era):
+    def _prune_era_data(self, delete_era: int) -> None:
         """
         Remove data from self._era_data if era_id is before delete_before
         """
@@ -113,7 +113,7 @@ class EraData:
             print(f"Removing Era data for era_id: {key}")
             del self._era_data[key]
 
-    def _add_era_data(self, next_era_id, next_era_validator_weights):
+    def _add_era_data(self, next_era_id: int, next_era_validator_weights: dict) -> None:
         """
         Creates expected self._era_data structures and validator weights for block finalization detection
         """
@@ -126,7 +126,7 @@ class EraData:
         # will come in after the switch block is received.
         self._prune_era_data(next_era_id - 2)
 
-    def _populate_validator_data_from_rpc(self, era_id: int):
+    def _populate_validator_data_from_rpc(self, era_id: int) -> None:
         """
         This loads initial validator weight information on startup as we have not received a switch block from the
         event stream yet.
@@ -167,7 +167,7 @@ class EraData:
             weight += ed["weights"].get(key, 0)
         return weight / ed["total_weight"]
 
-    def process_finality_signature(self, fin_sig):
+    def process_finality_signature(self, fin_sig: dict) -> bool:
         """
         Processes the finality signature received from the event stream.
 
@@ -179,7 +179,7 @@ class EraData:
         weight = self.block_percent_signed_weight(block_hash, era_id)
         return weight > 0.67
 
-    def process_block(self, block):
+    def process_block(self, block: dict) -> None:
         """
         This will be called with each block received.  If the block has era_end data, this will be used to update
         next era_id's validator weight.
