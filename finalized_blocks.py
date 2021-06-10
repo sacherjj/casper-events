@@ -17,7 +17,12 @@ import json
 #  - current validator list and weights
 #  - finality signatures for a block
 #
-# This example uses the SSE event stream from a node as this is event driven and eliminates polling of an RPC call.
+# This example uses the SSE event stream from a node as this is event driven, provides the fastest responce, and
+# eliminates polling of an RPC call.
+#
+# At startup, the validators weights is not known for the current Era, so this is retrieved via RPC calls.  This
+# should be the only RPC calls needed and all further validator weights are taken from the switch block (last block) of
+# the Era that comes in through the event stream.
 #
 
 BASE_SERVER = "3.14.161.135"
