@@ -30,67 +30,54 @@ RPC_SERVER_URL = f"http://{BASE_SERVER}:7777/rpc"
 SSE_SERVER_URL = f"http://{BASE_SERVER}:9999/events"
 
 
-class EventStreamReader:
-    """ Read the event stream of a casper-node """
-    RECONNECT_DELAY_SEC = 5
-    RECONNECT_COUNT = 1500
-
-    def __init__(self, server_address: str, start_from: int = 0):
-        self.server = server_address
-        self.start_from = start_from
-        self.last_msg_id = -1
-
-    def messages(self):
-        """
-        Blocking method that continuously yields messages from the SSE server.
-        """
-        reconnect_count = 0
-        while reconnect_count < self.RECONNECT_COUNT:
-            reconnect_count += 1
-            try:
-                # On restart we might crawl through a bunch, but this doesn't miss them if it is a server restart.
-                self.start_from = 0
-                for message in SSEClient(f"{self.server}?start_from={self.start_from}"):
-                    # SSE may send empty messages.  We ignore those.
-                    if message.id is not None:
-                        reconnect_count = 0
-                        self.last_msg_id = int(message.id)
-                        self.start_from = self.last_msg_id + 1
-                        yield message
-                print("Stream ended without error, retrying after delay.")
-                sleep(self.RECONNECT_DELAY_SEC)
-            except ConnectionError:
-                print(f"Connection Error, last msg.id = {self.last_msg_id}, restarting after delay.")
-                # Most likely server being restarted. Give some time before retry.
-                sleep(self.RECONNECT_DELAY_SEC)
-            except Exception as e:
-                print(f"Error occurred: {e}")
-        else:
-            print(f"Reconnect count: {self.RECONNECT_COUNT} exceeded. Exiting...")
+RECONNECT_DELAY_SEC = 5
+RECONNECT_COUNT = 1500
 
 
-def rpc_call(method, params):
-    url = RPC_SERVER_URL
-    payload = json.dumps({"jsonrpc": "2.0", "method": method, "params": params, "id": 1})
+def event_stream_messages():
+    """
+    Blocking method that continuously yields messages from the SSE server.
+    """
+    reconnect_count = 0
+    while reconnect_count < RECONNECT_COUNT:
+        reconnect_count += 1
+        try:
+            # On restart we might crawl through a bunch, but this doesn't miss them if it is a server restart.
+            for message in SSEClient(f"{SSE_SERVER_URL}?start_from=0"):
+                # SSE may send empty messages.  We ignore those.
+                if message.id is not None:
+                    reconnect_count = 0
+                    yield message
+            print("Stream ended without error, retrying after delay.")
+            sleep(RECONNECT_DELAY_SEC)
+        except ConnectionError:
+            print(f"Connection Error, restarting after delay.")
+            # Most likely server being restarted. Give some time before retry.
+            sleep(RECONNECT_DELAY_SEC)
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            sleep(RECONNECT_DELAY_SEC)
+    else:
+        print(f"Reconnect count: {RECONNECT_COUNT} exceeded. Exiting...")
+
+
+def get_block_by_height(block_height=None):
+    """
+    Get block by block_height from RPC call.  If block_height is missing, will get latest block.
+    """
+    if block_height:
+        params = [{"Height": block_height}]
+    else:
+        params = []
+
+    payload = json.dumps({"jsonrpc": "2.0", "method": "chain_get_block", "params": params, "id": 1})
     headers = {'content-type': "application/json", 'cache-control': "no-cache"}
     try:
-        response = requests.request("POST", url, data=payload, headers=headers)
+        response = requests.request("POST", RPC_SERVER_URL, data=payload, headers=headers)
         json_data = json.loads(response.text)
         return json_data["result"]
     except Exception as e:
         print(f"Error during RPC call: {e}")
-
-
-def get_block(block_hash=None, block_height=None):
-    """
-    Get block based on block_hash, block_height, or last block if block_identifier is missing
-    """
-    params = []
-    if block_hash:
-        params = [{"Hash": block_hash}]
-    elif block_height:
-        params = [{"Height": block_height}]
-    return rpc_call("chain_get_block", params)
 
 
 class EraData:
@@ -120,7 +107,7 @@ class EraData:
         Returns (height, era_id, era_end) from block queried by block_height.
         If no block_height is given it will return the latest block.
         """
-        block_data = get_block(block_height=block_height)
+        block_data = get_block_by_height(block_height)
         block_header = block_data["block"]["header"]
         return block_header["height"], block_header["era_id"], block_header["era_end"]
 
@@ -217,13 +204,12 @@ def stream_block_finalization():
     """
     Main method to announce block reception and finalization.
     """
-    esr = EventStreamReader(SSE_SERVER_URL)
     era_data = EraData()
 
     # Store finalized_block used to announce so we only announce once
     finalized_block_hash = ''
     # Loop through all messages streamed out and process
-    for msg in esr.messages():
+    for msg in event_stream_messages():
         if not msg:
             continue
         json_data = json.loads(msg.data)

@@ -85,6 +85,7 @@ class EventStreamReader:
                 sleep(self.RECONNECT_DELAY_SEC)
             except Exception as e:
                 logging.error(f"Error occurred: {e}")
+                sleep(self.RECONNECT_DELAY_SEC)
         else:
             logging.error(f"Reconnect count: {self.RECONNECT_COUNT} exceeded. Exiting...")
 
