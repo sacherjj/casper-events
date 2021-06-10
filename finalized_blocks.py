@@ -1,6 +1,5 @@
 from sseclient import SSEClient
 import requests
-from requests.exceptions import ConnectionError
 
 from time import sleep
 from collections import defaultdict
@@ -49,14 +48,9 @@ def event_stream_messages():
                     reconnect_count = 0
                     yield message
             print("Stream ended without error, retrying after delay.")
-            sleep(RECONNECT_DELAY_SEC)
-        except ConnectionError:
-            print(f"Connection Error, restarting after delay.")
-            # Most likely server being restarted. Give some time before retry.
-            sleep(RECONNECT_DELAY_SEC)
         except Exception as e:
             print(f"Error occurred: {e}")
-            sleep(RECONNECT_DELAY_SEC)
+        sleep(RECONNECT_DELAY_SEC)
     else:
         print(f"Reconnect count: {RECONNECT_COUNT} exceeded. Exiting...")
 
