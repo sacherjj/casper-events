@@ -90,6 +90,10 @@ class MessageData:
         return self.is_type(BLOCK_ADDED)
 
     @property
+    def is_step(self):
+        return self.is_type(STEP)
+
+    @property
     def primary_key(self):
         funcs = {FINALITY_SIGNATURE: self._fin_sig_pk,
                  BLOCK_ADDED: self._block_pk,
