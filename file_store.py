@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from typing import Union
 from event_stream_reader import EventStreamReader
 import config
@@ -5,9 +7,14 @@ from message_structure import MessageData
 from pathlib import Path
 from generate_finality_signatures import generate_finality_signatures_for_block
 import json
+import sys
+import argparse
 
 
-esr = EventStreamReader(config.SSE_SERVER_URL)
+esr_main = EventStreamReader(config.SSE_SERVER_MAIN_URL)
+esr_deploys = EventStreamReader(config.SSE_SERVER_DEPLOYS_URL)
+esr_sigs = EventStreamReader(config.SSE_SERVER_SIGS_URL)
+
 
 # Three message types:
 # DeployProcessed - Has no era_id, can store in block-hash folder and move into era_id folder when we get BlockAdded
@@ -41,15 +48,18 @@ def move_deploys_to_era(directory: str, era_id: str, root_dir: Path = config.DAT
         source_dir.rmdir()
 
 
-def save_files():
-    for msg in esr.messages():
+def save_files(stream_reader):
+    for msg in stream_reader.messages():
         if not msg:
             continue
         data = MessageData(msg.data)
         era_id = data.era_id
-        # We don't have a block for deploys yet as they process before the era_id is known.
-        # Using a directory name in root data directory as block_hash
-        directory = era_directory_name(era_id) if not data.is_deploy_processed else data.block_hash
+        if data.is_deploy_accepted:
+            directory = "deploy_accepted"
+        else:
+            # We don't have a block for deploys yet as they process before the era_id is known.
+            # Using a directory name in root data directory as block_hash
+            directory = era_directory_name(era_id) if not data.is_deploy_processed else data.block_hash
 
         # We can go directly into a era/block_hash structure for finality_signatures
         if data.is_finality_signature:
@@ -92,8 +102,16 @@ def recreate_finality_signatures(data_dir: Path = config.DATA_DIR):
                     print(e)
 
 
+stream_readers = {"deploys": esr_deploys,
+            "finsig": esr_sigs,
+            "main": esr_main}
+
+parser = argparse.ArgumentParser(description="Utility to save events to files")
+parser.add_argument("command", help="Subcommand to run.", choices=stream_readers.keys())
+args = parser.parse_args(sys.argv[1:])
+esr = stream_readers[args.command]
 while True:
     try:
-        save_files()
+        save_files(esr)
     except Exception as e:
-        print(f"file_store exception: {e}")
+        print(f"file_store exceptions: {e}")

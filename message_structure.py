@@ -4,6 +4,7 @@ import datetime
 
 API_VERSION = "ApiVersion"
 DEPLOY_PROCESSED = "DeployProcessed"
+DEPLOY_ACCEPTED = "DeployAccepted"
 BLOCK_ADDED = "BlockAdded"
 FINALITY_SIGNATURE = "FinalitySignature"
 STEP = "Step"
@@ -54,6 +55,9 @@ class MessageData:
     def _deploy_pk(self):
         return f"deploy-{self.data['deploy_hash']}"
 
+    def _deploy_accepted_pk(self):
+        return f"deploy-accepted-{self.data['hash']}"
+
     def _api_pk(self):
         return f"api-{self.data[API_VERSION].replace('.', '_')}"
 
@@ -78,8 +82,16 @@ class MessageData:
         return self.is_type(API_VERSION)
 
     @property
+    def is_deploy(self):
+        return self.is_deploy_accepted or self.is_deploy_processed
+
+    @property
     def is_deploy_processed(self):
         return self.is_type(DEPLOY_PROCESSED)
+
+    @property
+    def is_deploy_accepted(self):
+        return self.is_type(DEPLOY_ACCEPTED)
 
     @property
     def is_finality_signature(self):
@@ -98,6 +110,7 @@ class MessageData:
         funcs = {FINALITY_SIGNATURE: self._fin_sig_pk,
                  BLOCK_ADDED: self._block_pk,
                  DEPLOY_PROCESSED: self._deploy_pk,
+                 DEPLOY_ACCEPTED: self._deploy_accepted_pk,
                  STEP: self._step_pk,
                  FAULT: self._fault_pk}
         func = funcs.get(self.message_type, self._unknown_pk)

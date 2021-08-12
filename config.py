@@ -1,10 +1,12 @@
 import os
 from pathlib import Path
 
-# SSE_SERVER_URL = "http://3.14.161.135:9999/events"
-# SSE_SERVER_URL = "http://3.15.169.239:9999/events"
-SSE_SERVER_URL = "http://3.143.94.198:9999/events"
-RPC_SERVER_URL = "http://18.144.176.168:7777/rpc"
+BASE_SERVER = "3.14.161.135"
+# BASE_SERVER = "3.136.227.9"
+RPC_SERVER_URL = f"http://{BASE_SERVER}:7777/rpc"
+SSE_SERVER_MAIN_URL = f"http://{BASE_SERVER}:9999/events/main"
+SSE_SERVER_DEPLOYS_URL = f"http://{BASE_SERVER}:9999/events/deploys"
+SSE_SERVER_SIGS_URL = f"http://{BASE_SERVER}:9999/events/sigs"
 
 SCRIPT_DIR = Path(__file__).parent.absolute()
 DATA_DIR = SCRIPT_DIR / "events"
