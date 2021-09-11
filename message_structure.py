@@ -130,3 +130,15 @@ class MessageData:
             # BlockAdded location
             return self.data["block", "header", "era_id"]
         return era_id
+
+    def get_deploy_hashes(self):
+        if not self.is_block_added:
+            return
+        for deploy_hash in self.data["block", "body", "deploy_hashes"]:
+            yield deploy_hash
+
+    def get_transfer_hashes(self):
+        if not self.is_block_added:
+            return
+        for transfer_hash in self.data["block", "body", "transfer_hashes"]:
+            yield transfer_hash
